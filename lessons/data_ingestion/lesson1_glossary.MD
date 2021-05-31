@@ -19,6 +19,3 @@
 * **Topic** (Kafka) - A logical construct used to organize and segment datasets within Kafka, similar to how SQL databases use tables
 * **Producer** (Kafka) - An application which is sending data to one or more Kafka Topics.
 * **Consumer** (Kafka) - An application which is receiving data from one or more Kafka Topics.
-
-
-#dsnd #kafka
