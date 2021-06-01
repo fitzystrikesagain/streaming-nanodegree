@@ -26,17 +26,29 @@ class Purchase:
 
 def produce_sync(topic_name):
     """Produces data synchronously into the Kafka Topic"""
-    p = Producer({"bootstrap.servers": BROKER_URL})
+    p = Producer({
+        "bootstrap.servers": BROKER_URL,
+        # "linger.ms": "10000",
+        # "batch.num.messages": "10000",
+        # "queue.buffering.max.messages": "1000000",
+        "compression.type": "lz4"
+    })
     start_time = datetime.utcnow()
     curr_iteration = 0
 
-    while curr_iteration <= 10000:
+    while True:
         p.produce(topic_name, Purchase().serialize())
-        p.flush()
-        if curr_iteration % 1000 == 0:
+        if curr_iteration % 10000 == 0:
             elapsed = (datetime.utcnow() - start_time).seconds
             print(f"Msgs sent: {curr_iteration} | Seconds elapsed: {elapsed}")
         curr_iteration += 1
+
+        """
+        We call poll here to flush message delivery reports from Kafka.
+        We don't care about the details, so calling it with a timeout of 0s
+        means it returns immediately and has very little performance impact.
+        """
+        p.poll(0)
 
 
 def main():
