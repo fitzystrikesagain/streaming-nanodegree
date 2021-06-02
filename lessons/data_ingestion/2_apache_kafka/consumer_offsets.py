@@ -18,6 +18,7 @@ async def consume(topic_name):
     c = Consumer(
         {
             "bootstrap.servers": BROKER_URL,
+            "group.id": "0-take2",
             "auto.offset.reset": "earliest"
             # TODO
         }
