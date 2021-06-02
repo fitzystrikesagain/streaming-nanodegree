@@ -1,5 +1,3 @@
-# Please complete the TODO items in the code
-
 import asyncio
 
 from confluent_kafka import Consumer, Producer, OFFSET_BEGINNING
@@ -13,19 +11,15 @@ async def consume(topic_name):
     # Sleep for a few seconds to give the producer time to create some data
     await asyncio.sleep(2.5)
 
-    # TODO: Set the auto offset reset to earliest
-    #       See: https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md
     c = Consumer(
         {
             "bootstrap.servers": BROKER_URL,
-            "group.id": "0-take2",
+            "group.id": "1",
             "auto.offset.reset": "earliest"
-            # TODO
         }
     )
 
-    # TODO: Configure the on_assign callback
-    #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=partition#confluent_kafka.Consumer.subscribe
+    # Configure the on_assign callback
     c.subscribe([topic_name], on_assign=on_assign)
 
     while True:
@@ -41,14 +35,13 @@ async def consume(topic_name):
 
 def on_assign(consumer, partitions):
     """Callback for when topic assignment takes place"""
-    # TODO: Set the partition offset to the beginning on every boot.
-    #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=partition#confluent_kafka.Consumer.on_assign
-    #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=partition#confluent_kafka.TopicPartition
+    # Set the partition offset to the beginning on every boot.
     for partition in partitions:
+        partition.offset = OFFSET_BEGINNING
+        consumer.assign(partitions)
         pass
 
-    # TODO: Assign the consumer the partitions
-    #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=partition#confluent_kafka.Consumer.assign
+    # Assign the consumer the partitions
     consumer.assign(partitions)
 
 
