@@ -5,7 +5,6 @@ import asyncio
 from confluent_kafka import Consumer, Producer, OFFSET_BEGINNING
 from confluent_kafka.admin import AdminClient, NewTopic
 
-
 BROKER_URL = "PLAINTEXT://localhost:9092"
 
 
@@ -19,7 +18,7 @@ async def consume(topic_name):
     c = Consumer(
         {
             "bootstrap.servers": BROKER_URL,
-            "group.id": "0",
+            "auto.offset.reset": "earliest"
             # TODO
         }
     )
