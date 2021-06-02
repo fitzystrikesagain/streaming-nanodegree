@@ -279,17 +279,18 @@ Broker. The Topic’s compression setting will always take precedence. This mean
 that codec mismatches between Producer and Topic will result in messages getting
 recompressed on the Broker.
 
-#### Compression type comparison
+### Compression type comparison
 
-| Algorithm | Pros | Cons | | ————— | ————— | ————— | | `lz4` | fast compression
-and decompression | low compression ration | | `snappy` | fast compression and
-decompression | low compression ratio | | `zstd` | high compression ratio |
-slower than `lz4` or `snappy` | | `gzip` | ubiquitous, widely supported |
-cpu-intensive, significantly slower than  `lz4` or `snappy` |
+| Algorithm | Pros | Cons | 
+| --------- | ---- | ---- | 
+| `lz4` | fast compression and decompression | low compression ration | 
+| `snappy` | fast compression and decompression | low compression ratio | 
+| `zstd` | high compression ratio | slower than `lz4` or `snappy` | 
+| `gzip` | ubiquitous, widely supported | cpu-intensive, significantly slower than  `lz4` or `snappy` |
 
 [Squeezing the firehose: getting the most from Kafka compression](https://blog.cloudflare.com/squeezing-the-firehose/)
 
-#### Batching Configuration
+### Batching Configuration
 
 Client libraries do not send every message individually, but rather send
 messages in batches for efficiency. Messages may be batched by time, count, or
@@ -305,7 +306,7 @@ storage-constrained, the size setting can be decreased. If the messages aren’t
 time-sensitive, the time setting can be decreased. These parameters can also be
 disabled completely, but this is pretty atypical.
 
-#### Kafka Producers - Summary
+### Kafka Producers - Summary
 
 Kafka Producers come with rich configuration options. No one set of settings
 works in all scenarios. If the producer isn’t performing as expected, it’s worth
@@ -318,19 +319,19 @@ desired throughput level.
 * [Apache Documentation on Producer Configuration](https://kafka.apache.org/documentation/#producerconfigs)
 * [confluent-kafka-python Producer class](https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=serializer#producer)
 
-Consumer Basics Kafka consumers subscribe to one or more Topics. Subscribing to
-a non-existent Topics will create it with default settings. Automatic topic
-creation can be disabled in the Consumer topic configuration, but Consumers
-should first assert a Topic doesn’t exist before trying to subscribe to it. Once
-a Consumers subscribes to a Topic, it will poll the Topic for data. Just like
-the Producer, the Consumer’s data queue can be configured by length, time, and
-size.
+## Consumer Basics
+
+Kafka consumers subscribe to one or more Topics. Subscribing to a non-existent
+Topics will create it with default settings. Automatic topic creation can be
+disabled in the Consumer topic configuration, but Consumers should first assert
+a Topic doesn’t exist before trying to subscribe to it. Once a Consumers
+subscribes to a Topic, it will poll the Topic for data. Just like the Producer,
+the Consumer’s data queue can be configured by length, time, and size.
 
 * `client.id` is an optional setting which is useful in debugging/limiting
   resources
-* Poll for data to read from Kafka Topic using the following methods:
-    * `poll`
-    * `consume`
+* Poll for data to read from Kafka Topic using the `poll` or `consume` 
+  methods
 
 ### Consumer Offsets
 
