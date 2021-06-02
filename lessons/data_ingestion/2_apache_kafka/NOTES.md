@@ -357,3 +357,87 @@ the Consumer runs; subsequent runs will pick up wherever they left off. To
 always start from the earliest known message, the Consumer must
 be [manually assigned](https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=serializer#confluent_kafka.Consumer.assign)
 to the start of the Topic on boot.
+
+### Consumer Groups
+
+When a Consumer is created, a `group.id` must be specified to indicate which
+group it belongs to. Groups are collections of Kafka consumers that work
+together to consume the same topic. These may exist within the same application
+or are multiple instances of the same application.
+
+Kafka uses `group.id` to assign partitions to specific Consumers so that each
+Consumer is responsible for a portion of the data. This spreads the load to
+increase throughput. Only one Consumer in a group receives a message from a
+particular partition from the Broker.
+
+When a Consumer process joins or leaves the group, a group coordinator broker
+begins a partition rebalance. The broker will reassign partitions to the current
+Consumer group. Rebalances are expensive, and during this time messages may not
+be processed or consumed.
+
+### Consumer Subscriptions
+
+Kafka
+supports [regexp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp)
+when it comes to Topic subscriptions. Given the following Topics:
+
+```
+com.udacity.lesson2.exercise1
+com.udacity.lesson2.exercise2
+com.udacity.lesson2.exercise3
+```
+
+we could subscribe to all three simultaneously with the following expression:
+
+```
+consumer.subscribe(
+	“^com.udacity.lesson2.*”
+)
+```
+
+More information can be found under `subscribe()` in
+the `confluent_kafka_python` documentation.
+
+### Consumer Deserializers
+
+Data being consumed must be deserialized in the same format in which it was
+serialized. Failure to deserialize correctly may cause crashes or inconsistent
+data.
+
+### Retrieving data from Kafka
+
+Most Consumers will have an infinite poll loop which ingests data from Kafka.
+Example:
+
+```
+...
+while True:
+	message = consumer.poll(timeout=1.0)
+	if not message:
+		continue # No data was retrieved
+	elif message.error() is not None:
+		continue # Log error in production
+	else:
+		print(message.key(), message.value()
+```
+
+Once a Consumer decides to exit, it should call `.close()` to close the
+connection. This allows the client to flush its offset and process any remaining
+messages. Failure to do so may leave the client in an inconsistent state. This
+also means the Broker has to determine that the Consumer has left the group.
+This can cause issues for the rest of the Consumer group and delay rebalances.
+
+The `.consume()` method can also be used, but `poll` has slightly richer
+features. The `consume` method can fetch multiple messages at once:
+
+```
+while True:
+	messages = consumer.consume(5, timeout=1.0)
+	for message in messages:
+		if not message:
+			continue # No data was retrieved
+		elif message.error() is not None:
+			continue # Log error in production
+		else:
+			print(message.key(), message.value()
+```
