@@ -458,3 +458,34 @@ This section covered:
 *  [Consumer Configuration Options](https://kafka.apache.org/documentation/#consumerconfigs)
 *  [confluent_kafka_python Options](https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=serializer#consumer)
 *  [librdkafka consumer options shared with confluent_kafka_python](https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md) 
+
+## Performance
+Monitoring Producers, Consumers, and Brokers is an important part of Kafka. Below we’ll cover a few key performance metrics.
+
+### Consumer Performance
+
+* **Consumer lag** measures how far behind a consumer is by subtracting the Latest Topic offset by the Consumer Topic offset. It’s okay if this falls a little behind. If lag grows over time, the Consumer can’t keep up and will need additional processes.
+* **Messages per second** indicates throughput of the Topic and can help assess performance goals. Low throughput may indicate that the Consumer can’t keep up.
+* **JMX** Kafka exports metrics through the Java Metrics Exporter, which can be connected to alerting and monitoring tools
+
+### Producer Performance
+
+* latency = time broker received - time produced
+* High latency may indicate: one of the following
+    * `acks` is set too high
+    * too many partitions
+    *  too many replicas
+
+### Broker Performance
+
+* Disk usage: Kafka may retain data indefinitely, so we should monitor
+* Network usage: high usage may slow consumption/production rates
+* Elections should happen infrequently
+    * very disruptive, they stop all consumption and production
+    * may indicate instability or inappropriate configuration
+
+### Further Reading
+*  [DataDog blog post on monitoring Kafka](https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics)
+*  [Confluent article on monitoring Kafka](https://docs.confluent.io/current/kafka/monitoring.html)
+*  [New Relic article on monitoring Kafka](https://blog.newrelic.com/engineering/new-relic-kafkapocalypse/) 
+
