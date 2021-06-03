@@ -442,3 +442,19 @@ while True:
 		else:
 			print(message.key(), message.value()
 ```
+
+### Kafka Consumers Summary/Further Reading
+
+This section covered:
+* high-level config options for Consumers
+* what Consumer Groups are
+* what rebalances are and when they happen
+* how offsets are used to track what a Consumer has consumed
+* how to subscribe a Consumer to a Topic
+* writing poll loops
+* deserializing data from Kafka
+
+#### Additional Consumer Resources
+*  [Consumer Configuration Options](https://kafka.apache.org/documentation/#consumerconfigs)
+*  [confluent_kafka_python Options](https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=serializer#consumer)
+*  [librdkafka consumer options shared with confluent_kafka_python](https://github.com/edenhill/librdkafka/blob/master/CONFIGURATION.md) 
