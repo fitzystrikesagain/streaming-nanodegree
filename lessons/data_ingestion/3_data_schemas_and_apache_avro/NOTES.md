@@ -24,11 +24,40 @@ Streaming applications are highly dependent on schemas. Schemas are important be
 * No schema -> broken consumer on every data change
 * Schemas allow consumers to function without updates
 * They provide independence and scalability
-*
-### Summary: Data Schemas
 ## Apache Avro
-### What is Apache Avro
+Avro is widely used in data engineering, particularly in Kafka. This section will cover key concept relating to Avro and stream processing.
+### What is Apache Avro?
+Avro is a data serialization system that uses binary compression. One of the downsides of JSON is that it doesn’t tell us what datatypes each key should be. Avro contains binary data that adheres to the schema and contains the schema itself.
 ### How Avro Schemas are Defined
+* Must include a type defined as `record`. This is always the top-level field
+* Avro records are defined in JSON
+* Records include a required name, such as “user”
+* May optionally include namespace
+* Must include array of fields that define expected fields and types:
+```
+"fields": [{"name": "age", "type", "int}]
+```
+* Support optional fields by specifying field type as either null or some other type. These are known as **union** types.
+```
+"fields": [{"name": "age", "type": ["null", "int"]}]
+```
+* Made up of complex and primitive types
+    * Complex types include other records, arrays, maps, enums, etc.
+* Example schema for a stock ticker price:
+```
+{
+  “type”: “record”,
+  “name”: “stock.price_change”,
+  “namespace”: “com.udacity”,
+  “fields”: [
+      {“name”: “ticker”, “type”: “string”},
+      {“name”: “prev_price”, “type”: “int”},
+      {“name”: “price”, “type”: “int”},
+      {“name”: “cause”, “type”: [“null”, “string”]}
+  ]
+}
+```
+[Avro documentation](https://avro.apache.org/docs/1.8.2/spec.html#schemas)
 ### Practice: Defining an Avro Record
 ### Apache Avro Data Types
 ### Complex Records in Avro
