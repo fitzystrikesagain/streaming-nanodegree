@@ -489,3 +489,23 @@ Monitoring Producers, Consumers, and Brokers is an important part of Kafka. Belo
 *  [Confluent article on monitoring Kafka](https://docs.confluent.io/current/kafka/monitoring.html)
 *  [New Relic article on monitoring Kafka](https://blog.newrelic.com/engineering/new-relic-kafkapocalypse/) 
 
+## Privacy and Security
+### Removing Records and Data Privacy
+
+Since Kafka is append-only, removal of sensitive information requires planning and consideration.
+
+Kafka can expire messages based on time. The simplest way to ensure compliance is to set sufficiently short retention periods. Unfortunately we usually need to keep data longer than this. This means that we need to use compaction rather than expiration. In a compacted topic, newer records deprecate older records, and `null` messages can be used to delete data.
+
+### Per-User Key Encryption
+
+The following idea was [put forth by Michiel Rook](https://www.michielrook.nl/2017/11/forget-me-please-event-sourcing-gdpr/) and [applied to Kafka by Daniel Lebrero](https://danlebrero.com/2018/04/11/kafka-gdpr-event-sourcing/) as an efficient way to manage user data in Kafka:
+
+1. Create a Topic that maps a user id to an encryption key
+2. Use the key to encrypt data before putting it into any other Topic
+3. If we need to delete the user data, we can compact
+
+### Optional Further Research - Removing Records and Data Privacy
+
+*  [Confluent blog post on GDPR and the right to be forgotten](https://www.confluent.io/blog/handling-gdpr-log-forget/)
+*  [Daniel Lebrero’s Encrypted User Keys strategy](https://danlebrero.com/2018/04/11/kafka-gdpr-event-sourcing/) 
+
