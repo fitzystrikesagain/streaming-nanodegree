@@ -42,7 +42,7 @@ Avro is a data serialization system that uses binary compression. One of the dow
 "fields": [{"name": "age", "type": ["null", "int"]}]
 ```
 * Made up of complex and primitive types
-    * Complex types include other records, arrays, maps, enums, etc.
+  * Complex types include other records, arrays, maps, enums, etc.
 * Example schema for a stock ticker price:
 ```
 {
@@ -59,8 +59,100 @@ Avro is a data serialization system that uses binary compression. One of the dow
 ```
 [Avro documentation](https://avro.apache.org/docs/1.8.2/spec.html#schemas)
 ### Practice: Defining an Avro Record
+\# TODO: Add link to `defining_a_schema.py`
 ### Apache Avro Data Types
+The following primitive types are defined by Avro:
+* `null`
+* `boolean`
+* `int`, `long`, `float`, `double`
+* `bytes`
+* `string`
+  Complex types allow nesting and composition and include:
+* records
+* enum
+* array
+* map
+* union
+* field
+#### Enum
+Enumerations are a set of named symbols:
+```
+{
+	"type": "enum",
+	"name": "us_states",
+	"symbols": ["AL", "AK", "AZ", "AR", "CA"]
+}
+```
+#### Arrays and Maps
+##### Arrays
+Arrays store ordered fields of either primitive or complex types:
+**Primitive**
+```
+{
+	"type": "array",
+	"values": "string"
+}
+```
+**Complex**
+```
+{
+	"type": "array",
+	"items": {
+		"type": "record",
+		"fields": [
+			{"name": "id", "type", "int"}
+		]
+}
+```
+
+##### Maps
+Maps store fields a a string key value store of either primitive or complex types. Keys in Maps are always strings
+**Primitive**
+```
+{
+	"type": "map",
+	"values": "int"
+}
+```
+**Complex**
+```
+{
+	"type": "map",
+	"values": {
+		"type": "record",
+		"fields": [
+			{"name": "id", "type", "int"}
+		]
+}
+```
+#### Unions
+Unions are used when a field can be one of multiple types. Unions aren’t explicit but are denoted by square brackets:
+```
+{
+	"type": "map",
+	"values": {
+		"type": "record",
+		"fields": [
+			{"name": "zipcode", "type": ["null", "int", "string"]}
+		]
+	}
+}
+```
+#### Fixed
+Fixed denotes a fixed size entry in bytes:
+```
+{
+	"name": "md5",
+	"type": "fixed",
+	"size": 16
+}
+```
+#### Further Reading
+[Avro Schema docs](https://avro.apache.org/docs/1.8.2/spec.html#schema_primitive)
+[Primitive Types](https://avro.apache.org/docs/1.8.2/spec.html#schema_primitive)
+[Complex Types](https://avro.apache.org/docs/1.8.2/spec.html#schema_complex)
 ### Complex Records in Avro
+\#TODO: Add link to exercise
 ### Apache Avro Summary
 ### Apache Avro and Kafka
 ## Schema Registry
