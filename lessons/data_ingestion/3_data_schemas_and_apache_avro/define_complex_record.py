@@ -1,20 +1,19 @@
-# Please complete the TODO items in the code
-
 import asyncio
 
 from dataclasses import asdict, dataclass, field
 from io import BytesIO
 import json
+from pprint import pprint as print
 import random
 
 from confluent_kafka import Producer
 from faker import Faker
 from fastavro import parse_schema, writer
 
-
 faker = Faker()
 
 BROKER_URL = "PLAINTEXT://localhost:9092"
+TOPIC = "com.udacity.lesson3.exercise3.clicks"
 
 
 @dataclass
@@ -35,10 +34,6 @@ class ClickEvent:
     number: int = field(default_factory=lambda: random.randint(0, 999))
     attributes: dict = field(default_factory=ClickAttribute.attributes)
 
-    #
-    # TODO: Update this Avro schema to include a map of attributes
-    #       See: https://avro.apache.org/docs/1.8.2/spec.html#Maps
-    #
     schema = parse_schema(
         {
             "type": "record",
@@ -48,10 +43,20 @@ class ClickEvent:
                 {"name": "email", "type": "string"},
                 {"name": "timestamp", "type": "string"},
                 {"name": "uri", "type": "string"},
-                {"name": "number", "type": "int"}
-                #
-                # TODO: Add the attributes map!
-                #
+                {"name": "number", "type": "int"},
+                {"name": "attributes",
+                 "type": {
+                     "type": "map",
+                     "values": {
+                         "type": "record",
+                         "name": "attribute",
+                         "fields": [
+                             {"name": "element", "type": "string"},
+                             {"name": "content", "type": "string"},
+                         ]
+                     }
+                 }
+                 }
             ],
         }
     )
@@ -60,6 +65,7 @@ class ClickEvent:
         """Serializes the ClickEvent for sending to Kafka"""
         out = BytesIO()
         writer(out, ClickEvent.schema, [asdict(self)])
+        print(out.getvalue())
         return out.getvalue()
 
 
@@ -68,13 +74,13 @@ async def produce(topic_name):
     p = Producer({"bootstrap.servers": BROKER_URL})
     while True:
         p.produce(topic_name, ClickEvent().serialize())
-        await asyncio.sleep(1.0)
+        await asyncio.sleep(5.0)
 
 
 def main():
     """Checks for topic and creates the topic if it does not exist"""
     try:
-        asyncio.run(produce_consume("com.udacity.lesson3.exercise3.clicks"))
+        asyncio.run(produce_consume(TOPIC))
     except KeyboardInterrupt as e:
         print("shutting down")
 
