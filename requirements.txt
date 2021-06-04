@@ -1,0 +1,4 @@
+confluent-kafka
+Faker
+fastavro
+requests

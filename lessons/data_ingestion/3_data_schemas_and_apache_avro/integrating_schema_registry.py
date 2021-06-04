@@ -1,14 +1,9 @@
-# Please complete the TODO items in the code
-
 import asyncio
 from dataclasses import asdict, dataclass, field
-import json
 import random
 
-from confluent_kafka import avro, Consumer, Producer
-from confluent_kafka.avro import AvroConsumer, AvroProducer, CachedSchemaRegistryClient
+from confluent_kafka.avro import AvroConsumer, AvroProducer, CachedSchemaRegistryClient, loads
 from faker import Faker
-
 
 faker = Faker()
 
@@ -34,11 +29,7 @@ class ClickEvent:
     number: int = field(default_factory=lambda: random.randint(0, 999))
     attributes: dict = field(default_factory=ClickAttribute.attributes)
 
-    #
-    # TODO: Load the schema using the Confluent avro loader
-    #       See: https://github.com/confluentinc/confluent-kafka-python/blob/master/confluent_kafka/avro/load.py#L23
-    #
-    schema = """{
+    schema = loads("""{
         "type": "record",
         "name": "click_event",
         "namespace": "com.udacity.lesson3.exercise4",
@@ -62,48 +53,35 @@ class ClickEvent:
                 }
             }
         ]
-    }"""
+    }""")
 
 
 async def produce(topic_name):
     """Produces data into the Kafka Topic"""
-    #
-    # TODO: Create a CachedSchemaRegistryClient. Use SCHEMA_REGISTRY_URL.
-    #       See: https://github.com/confluentinc/confluent-kafka-python/blob/master/confluent_kafka/avro/cached_schema_registry_client.py#L47
-    #
-    # schema_registry = TODO
+    schema_registry = CachedSchemaRegistryClient({"url": SCHEMA_REGISTRY_URL})
 
-    #
-    # TODO: Replace with an AvroProducer.
-    #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=loads#confluent_kafka.avro.AvroProducer
-    #
-    p = Producer({"bootstrap.servers": BROKER_URL})
+    p = AvroProducer(
+        {"bootstrap.servers": BROKER_URL},
+        schema_registry=schema_registry,
+    )
     while True:
-        #
-        # TODO: Replace with an AvroProducer produce. Make sure to specify the schema!
-        #       Tip: Make sure to serialize the ClickEvent with `asdict(ClickEvent())`
-        #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=loads#confluent_kafka.avro.AvroProducer
-        #
         p.produce(
             topic=topic_name,
             value=asdict(ClickEvent()),
-            # TODO: Supply schema
+            value_schema=ClickEvent.schema
         )
         await asyncio.sleep(1.0)
 
 
 async def consume(topic_name):
     """Consumes data from the Kafka Topic"""
-    #
-    # TODO: Create a CachedSchemaRegistryClient
-    #
-    # schema_registry = TODO
+    schema_registry = CachedSchemaRegistryClient({"url": SCHEMA_REGISTRY_URL})
 
-    #
-    # TODO: Use the Avro Consumer
-    #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=loads#confluent_kafka.avro.AvroConsumer
-    #
-    c = Consumer({"bootstrap.servers": BROKER_URL, "group.id": "0"})
+    c = AvroConsumer({
+        "bootstrap.servers": BROKER_URL,
+        "group.id": "0"},
+        schema_registry=schema_registry,
+    )
     c.subscribe([topic_name])
     while True:
         message = c.poll(1.0)
