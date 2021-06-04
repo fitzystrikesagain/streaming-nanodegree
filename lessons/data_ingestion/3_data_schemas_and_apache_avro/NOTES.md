@@ -164,9 +164,24 @@ Fixed denotes a fixed size entry in bytes:
 *  [Apache Avro Specification](https://avro.apache.org/docs/1.8.2/spec.html#Maps)
 
 ### Apache Avro and Kafka
+Avro has been used extensively in the Kafka ecosystem since the beginning. It’s not required but makes things much easier. A Producer must define an Avro schema and encode the data. Many client libraries have built-in support for this. Python’s `confluent-kafka` library’s `AvroConsumer` will automatically unpack and deserialize data based on the schema provided with the data.
+*  [`confluent_kafka_python` Avro Producer](https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=partition#confluent_kafka.avro.AvroProducer)
+*  [`confluent_kafka_python` Avro Consumer](https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=partition#confluent_kafka.avro.AvroConsumer)
 ## Schema Registry
+The  [Confluent Schema Registry](https://docs.confluent.io/current/schema-registry/index.html)  is a tool that provides centralized Avro Schema storage. This section will cover how to use the Schema Registry to improve streaming applications.
 ### Kafka - Schema Registry Integration
-### Review: Kafka - Schema Registry Integration
+#### Producing/Consuming data with Schema Registry
+Including a schema definition in in every message adds unnecessary overhead. It also puts the onus for serialization and deserialization on the producer and consumer. The Registry is built by Confluent and deployed along with Kafka. Instead the Kafka client can send the schema to the registry.
+The Registry assigns the schema a version number and stores it in a private topic until it is changed. When consumers consume topic data, the Kafka client library will automatically pull the schema from the registry. The Registry can pull historic schemas as well, so that all messages can be serialized and deserialized.
+Schemas only need to be sent to the Registry once, and clients will fetch the schema from there as needed. The Registry doesn’t support deletes by default, but deleting is not recommended. It also has an HTTP REST interface, making it easy to use, and is not limited to Kafka producers and consumers; any application can interact with the schema registry.
+#### Schema Registry Architecture
+* Web server built on the JVM using Scala and Java
+* Highly portable, runs on almost all OSes
+* Stores all state in Kafka rather than datbase
+* Uses compaction to ensure no data is deleted
+* Exposes an HTTP web server with a REST API
+* Can run standalone or clustered with many nodes
+  * Uses ZooKeeper to elect leader when in cluster mode
 ### Integrating Schema Registry
 ### Schema Registry Summary
 ## Schema Evolution; Compatibility
@@ -177,5 +192,3 @@ Fixed denotes a fixed size entry in bytes:
 ### Full Compatibility
 ### No Compatibility
 ### Summary: Schema Evolution & Compatibility
-
-#dsnd/kafka 
