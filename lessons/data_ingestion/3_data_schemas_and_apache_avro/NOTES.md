@@ -183,7 +183,16 @@ Schemas only need to be sent to the Registry once, and clients will fetch the sc
 * Can run standalone or clustered with many nodes
   * Uses ZooKeeper to elect leader when in cluster mode
 ### Integrating Schema Registry
+\# TODO: Add link to `integrating_schema_registry.py`
 ### Schema Registry Summary
+As a recap, the Schema Registry:
+* Provides a REST API for managing Avro Schemas
+* Many clients natively support Registry interactions
+* Reduces overhead, allowing producers/consumers to register schemas once
+* Simplifies Avro, lowering barrier to entry
+* Uses a Topic to store state
+* Deployed on one or more web servers, with one leader
+* Uses ZooKeeper to manage elections when in a cluster
 ## Schema Evolution; Compatibility
 ### Understanding Schema Evolution
 ### Schema Compatibility
@@ -192,3 +201,5 @@ Schemas only need to be sent to the Registry once, and clients will fetch the sc
 ### Full Compatibility
 ### No Compatibility
 ### Summary: Schema Evolution & Compatibility
+
+#dsnd/kafka 
