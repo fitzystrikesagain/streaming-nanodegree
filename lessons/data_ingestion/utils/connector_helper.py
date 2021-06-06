@@ -44,7 +44,7 @@ class ConnectorHelper(KafkaConnectHelper):
         r = self.request(endpoint=CONNECT_ENDPOINTS["plugins"])
         return r.json()
 
-    def create_connector(self, name, conn_cls, max_tasks, logpath, topic):
+    def create_connector(self, name, conn_cls, max_tasks, logpath, topic, **kwargs):
         """
         Creates a new connector
         :return: json response
@@ -62,6 +62,9 @@ class ConnectorHelper(KafkaConnectHelper):
                 "topic": topic
             }
         }
+        # If config kwargs are passed, replace underscores with periods and add them to data
+        for key, value in kwargs.items():
+            data["config"][key.replace("_", ".")] = value
 
         r = self.request(method="post", endpoint=CONNECT_ENDPOINTS["connectors"], data=data)
         return r.json()
