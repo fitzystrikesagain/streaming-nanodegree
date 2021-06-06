@@ -64,11 +64,85 @@ As a recap, Kafka Connect:
 
 ## Kafka Connect Connectors
 
-## Reviewing Kafka Connectors
+Popular Kafka Connect plugins:
+
+* [Confluent Kafka Connect Plugin Search](https://www.confluent.io/hub/?utm_medium=sem&utm_source=google&utm_campaign=ch.sem_br.brand_tp.prs_tgt.confluent-brand_mt.mbm_rgn.namer_lng.eng_dv.all&utm_term=%2Bconfluent%20%2Bconnect&creative=357969856550&device=c&placement=&gclid=Cj0KCQjwp5_qBRDBARIsANxdcikzhat8UGdi8TVVfxhSATPhQqLibR81tnJC0lVGsPaRubygAORySDEaAhrbEALw_wcB)
+* [Amazon S3 Connector](https://www.confluent.io/hub/confluentinc/kafka-connect-s3)
+* [SQL JDBC Connector](https://www.confluent.io/hub/confluentinc/kafka-connect-jdbc)
+* [HDFS Connector](https://www.confluent.io/hub/confluentinc/kafka-connect-hdfs)
+* [HTTP Connector](https://www.confluent.io/hub/confluentinc/kafka-connect-http)
 
 ## The Kafka Connect API
 
+Connect is managed exclusively through an HTTP REST API. It supports CRUD operations on Connectors, which can be stopped
+or started via API. Plugins can be added or removed while the server is running. The API aids in monitoring connectors,
+but does not surface logs or metrics.
+
+[Official REST API Documentation](https://docs.confluent.io/current/connect/references/restapi.html)
+
 ## Using the Kafka Connect API
+
+In this exercise we're going to make use of the Kafka Connect API.
+
+[REST API documentation](https://docs.confluent.io/current/connect/references/restapi.html).
+
+### Viewing Connectors
+
+First, we can view connector-plugins:
+
+`curl http://localhost:8083/connector-plugins | python -m json.tool`
+
+Quick note, the `| python -m json.tool` above simply takes the output of the `curl` command and prints the JSON nicely.
+You can omit this if you'd like!
+
+### Create a Connector
+
+Lets create a connector. We'll dive into more details on how this works later.
+
+```
+curl -X POST -H 'Content-Type: application/json' -d '{
+    "name": "first-connector",
+    "config": {
+        "connector.class": "FileStreamSource",
+        "tasks.max": 1,
+        "file": "/var/log/journal/confluent-kafka-connect.service.log",
+        "topic": "kafka-connect-logs"
+    }
+  }' \
+  http://localhost:8083/connectors
+```
+
+### List connectors
+
+We can list all configured connectors with:
+
+`curl http://localhost:8083/connectors | python -m json.tool`
+
+You can see our connector in the list.
+
+### Detailing connectors
+
+Let's list details on our connector:
+
+`curl http://localhost:8083/connectors/first-connector | python -m json.tool`
+
+### Pausing connectors
+
+Sometimes its desirable to pause or restart connectors:
+
+To pause:
+
+`curl -X PUT http://localhost:8083/connectors/first-connector/pause`
+
+To restart:
+
+`curl -X POST http://localhost:8083/connectors/first-connector/restart`
+
+### Deleting connectors
+
+Finally, to delete your connector:
+
+`curl -X DELETE http://localhost:8083/connectors/first-connector`
 
 ## Summary: Kafka Connect Connectors
 
@@ -107,5 +181,3 @@ As a recap, Kafka Connect:
 ## Summary: Using REST Proxy
 
 ## Lesson Summary
-
-# dsnd/kafka
