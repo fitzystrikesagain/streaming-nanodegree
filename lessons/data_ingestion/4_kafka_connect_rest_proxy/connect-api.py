@@ -1,7 +1,8 @@
 from lessons.data_ingestion.utils.connector_helper import ConnectorHelper
+from lessons.data_ingestion.utils.task_helper import TaskHelper
 
 
-def main():
+def connector_demo():
     # Create a helper object
     helper = ConnectorHelper(verbose=True)
 
@@ -55,5 +56,27 @@ def main():
         print(e)
 
 
+def task_demo():
+    # First, create a new connector
+    my_conn = ConnectorHelper(connector_name="first-connector", verbose=True)
+
+    try:
+        my_conn.create_connector(
+            name=my_conn.connector_name,
+            conn_cls="FileStreamSource",
+            max_tasks=1,
+            logpath="/var/log/journal/confluent-kafka-connect.service.log",
+            topic="kafka-connect-logs"
+        )
+    except ValueError as e:
+        print(e)
+
+    # Show the connector's tasks (will be empty list if no tasks)
+    my_task = TaskHelper(conn_name=my_conn.connector_name, verbose=True)
+    my_task.task_details()
+
+
 if __name__ == "__main__":
-    main()
+    # connector_demo()
+    # task_demo()
+    pass

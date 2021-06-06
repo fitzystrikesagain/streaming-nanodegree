@@ -1,5 +1,9 @@
-from lessons.data_ingestion.utils.constants import CONNECT_ENDPOINTS as ENDPOINTS
 from lessons.data_ingestion.utils.kafka_connect_helper import KafkaConnectHelper
+
+CONNECT_ENDPOINTS = {
+    "plugins": "/connector-plugins",
+    "connectors": "/connectors"
+}
 
 
 class ConnectorHelper(KafkaConnectHelper):
@@ -8,12 +12,19 @@ class ConnectorHelper(KafkaConnectHelper):
     will pretty print the method, endpoint, status code, and response
     """
 
+    def __init__(self, connector_name=None, plugin_name=None, verbose=False):
+
+        super().__init__()
+        self.connector_name = connector_name
+        self.plugin_name = plugin_name
+        self.verbose = verbose
+
     def get_connector_details(self, name):
         """
         Returns details about connector `name`
         :return: json response
         """
-        endpoint = f"{ENDPOINTS['connectors']}/{name}"
+        endpoint = f"{CONNECT_ENDPOINTS['connectors']}/{name}"
         r = self.request(endpoint=endpoint)
         return r.json()
 
@@ -22,7 +33,7 @@ class ConnectorHelper(KafkaConnectHelper):
         Returns a list of connectors
         :return: list
         """
-        r = self.request(endpoint=ENDPOINTS["connectors"])
+        r = self.request(endpoint=CONNECT_ENDPOINTS["connectors"])
         return r.json()
 
     def get_plugins(self):
@@ -30,7 +41,7 @@ class ConnectorHelper(KafkaConnectHelper):
         Returns a dict of plugins
         :return: json response
         """
-        r = self.request(endpoint=ENDPOINTS["plugins"])
+        r = self.request(endpoint=CONNECT_ENDPOINTS["plugins"])
         return r.json()
 
     def create_connector(self, name, conn_cls, max_tasks, logpath, topic):
@@ -52,7 +63,7 @@ class ConnectorHelper(KafkaConnectHelper):
             }
         }
 
-        r = self.request(method="post", endpoint=ENDPOINTS["connectors"], data=data)
+        r = self.request(method="post", endpoint=CONNECT_ENDPOINTS["connectors"], data=data)
         return r.json()
 
     def manage_connector(self, name, action):
