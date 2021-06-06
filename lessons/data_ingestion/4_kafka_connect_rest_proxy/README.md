@@ -93,11 +93,11 @@ First, we can view connector-plugins:
 `curl http://localhost:8083/connector-plugins | python -m json.tool`
 
 Quick note, the `| python -m json.tool` above simply takes the output of the `curl` command and prints the JSON nicely.
-You can omit this if you'd like!
+You can omit this if you’d like!
 
 ### Create a Connector
 
-Lets create a connector. We'll dive into more details on how this works later.
+Let’s create a connector. We’ll dive into more details on how this works later.
 
 ```
 curl -X POST -H 'Content-Type: application/json' -d '{
@@ -122,7 +122,7 @@ You can see our connector in the list.
 
 ### Detailing connectors
 
-Let's list details on our connector:
+Let’s list details on our connector:
 
 `curl http://localhost:8083/connectors/first-connector | python -m json.tool`
 
@@ -144,9 +144,27 @@ Finally, to delete your connector:
 
 `curl -X DELETE http://localhost:8083/connectors/first-connector`
 
-## Summary: Kafka Connect Connectors
+### Kafka Connect Connectors - Optional Further Research
+
+* [Confluent Connector Hub](https://www.confluent.io/hub/?_ga=2.42557541.1345547963.1563205519-78292278.1561645529)
+* [List of core Connectors included with most distributions](https://docs.confluent.io/current/connect/managing/connectors.html)
+* [Connect REST API Documentation](https://docs.confluent.io/current/connect/references/restapi.html)
 
 ## Key Connectors
+
+This section will cover the more common Connectors, such as the JDBC sink and source connector and the FileStream
+connector.
+
+### FileStream Source
+
+This source sends logs as events to Kafka. This doesn’t require configuring additional application-side logging, but
+rather a FileStream source connector to monitor changes to some file on disk. The changes get captured by Kafka and
+emitted as events to a topic:
+
+![FileStream Source](../assets/filestream_source.png)
+
+With this approach, the application can remain unaware of Kafka’s involvement and simply continues writing its logs to
+disk.
 
 ## Kafka Connect FileStream Source
 
@@ -181,3 +199,5 @@ Finally, to delete your connector:
 ## Summary: Using REST Proxy
 
 ## Lesson Summary
+
+
