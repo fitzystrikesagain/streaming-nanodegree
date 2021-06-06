@@ -167,7 +167,9 @@ With this approach, the application can remain unaware of Kafka’s involvement 
 disk.
 
 ## Kafka Connect FileStream Source
+
 Example exercise [here](../4_kafka_connect_rest_proxy/filestream_source.py)
+
 ## JDBC Sinks and Sources
 
 ## Kafka Connect JDBC Source
