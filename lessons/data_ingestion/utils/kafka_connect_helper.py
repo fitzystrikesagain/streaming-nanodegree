@@ -1,4 +1,5 @@
 import json
+from json.decoder import JSONDecodeError
 from pprint import pprint
 import requests
 
@@ -24,7 +25,12 @@ class KafkaConnectHelper:
         if self.verbose:
             pprint(f"{method} {BASE_URL}{endpoint}")
             pprint(f"Status code: {r.status_code}")
-            pprint(r.json())
+            try:
+                pprint(r.json())
+            # If there is no json, don't print the error
+            except JSONDecodeError as e:
+                pass
+            print()
         return r
 
     @staticmethod

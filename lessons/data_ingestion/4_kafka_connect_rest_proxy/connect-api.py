@@ -5,12 +5,12 @@ from lessons.data_ingestion.utils.task_helper import TaskHelper
 def connector_demo():
     # Create a helper object
     helper = ConnectorHelper(verbose=True)
+    connector_name = "first-connector"
 
     # Show current plugins
     helper.get_plugins()
 
     # Configure a new connector
-    connector_name = "first-connector"
     try:
         helper.create_connector(
             name=connector_name,
@@ -31,6 +31,7 @@ def connector_demo():
     # Get a connector's status
     helper.get_connector_status(name=connector_name)
 
+    helper.manage_connector(name=connector_name, action="pause")
     # Pause a connector
     try:
         helper.manage_connector(name=connector_name, action="pause")
@@ -77,6 +78,6 @@ def task_demo():
 
 
 if __name__ == "__main__":
-    # connector_demo()
+    connector_demo()
     # task_demo()
     pass

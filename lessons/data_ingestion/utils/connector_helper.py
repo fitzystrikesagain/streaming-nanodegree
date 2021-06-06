@@ -2,7 +2,10 @@ from lessons.data_ingestion.utils.kafka_connect_helper import KafkaConnectHelper
 
 CONNECT_ENDPOINTS = {
     "plugins": "/connector-plugins",
-    "connectors": "/connectors"
+    "connectors": "/connectors",
+    "details": "/connectors/{conn_name}",
+    "manage": "/connectors/{conn_name}/{action}",
+    "delete": "/connectors/{conn_name}/delete",
 }
 
 
@@ -24,7 +27,7 @@ class ConnectorHelper(KafkaConnectHelper):
         Returns details about connector `name`
         :return: json response
         """
-        endpoint = f"{CONNECT_ENDPOINTS['connectors']}/{name}"
+        endpoint = CONNECT_ENDPOINTS["details"].format(conn_name=name)
         r = self.request(endpoint=endpoint)
         return r.json()
 
@@ -33,7 +36,8 @@ class ConnectorHelper(KafkaConnectHelper):
         Returns a list of connectors
         :return: list
         """
-        r = self.request(endpoint=CONNECT_ENDPOINTS["connectors"])
+        endpoint = CONNECT_ENDPOINTS["connectors"]
+        r = self.request(endpoint=endpoint)
         return r.json()
 
     def get_plugins(self):
@@ -41,12 +45,19 @@ class ConnectorHelper(KafkaConnectHelper):
         Returns a dict of plugins
         :return: json response
         """
-        r = self.request(endpoint=CONNECT_ENDPOINTS["plugins"])
+        endpoint = endpoint = CONNECT_ENDPOINTS["plugins"]
+        r = self.request(endpoint=endpoint)
         return r.json()
 
     def create_connector(self, name, conn_cls, max_tasks, logpath, topic, **kwargs):
         """
         Creates a new connector
+        :param name: name of the connector
+        :param conn_cls: connector class
+        :param max_tasks: max number of tasks
+        :param logpath: path to the logfile to read
+        :param topic: name of the Kafka topic
+        :param kwargs: additional config parameters
         :return: json response
         """
         connectors = self.get_connectors()
@@ -66,7 +77,8 @@ class ConnectorHelper(KafkaConnectHelper):
         for key, value in kwargs.items():
             data["config"][key.replace("_", ".")] = value
 
-        r = self.request(method="post", endpoint=CONNECT_ENDPOINTS["connectors"], data=data)
+        endpoint = CONNECT_ENDPOINTS["connectors"]
+        r = self.request(method="post", endpoint=endpoint, data=data)
         return r.json()
 
     def manage_connector(self, name, action):
@@ -86,12 +98,13 @@ class ConnectorHelper(KafkaConnectHelper):
             raise ValueError(f"Connector `name` must be one of: {actions.keys()}")
 
         if action == "delete":
-            endpoint = f"/connectors/{name}"
+            endpoint = CONNECT_ENDPOINTS["delete"].format(conn_name=name)
         else:
-            endpoint = f"/connectors/{name}/{action}"
-
+            endpoint = CONNECT_ENDPOINTS["manage"].format(conn_name=name, action=action)
         r = self.request(endpoint=endpoint, method=actions[action])
-        return r.json()
+        if action == "delete" and r.status_code == 404:
+            print(f"Connector not found for action {action} {name}")
+        return r
 
     def get_connector_status(self, name):
         """
