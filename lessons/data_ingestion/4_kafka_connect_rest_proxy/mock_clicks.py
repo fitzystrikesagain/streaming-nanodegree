@@ -75,7 +75,7 @@ def main():
     :return: None
     """
     # Set start and end values
-    start, end = 350001, 1000000
+    start, end = 1, 100000
 
     # Build and execute query
     start_ts = time.time()
