@@ -1,22 +1,19 @@
-# Please complete the TODO items in the code
-
 import json
 
 import requests
-
 
 REST_PROXY_URL = "http://localhost:8082"
 
 
 def get_topics():
     """Gets topics from REST Proxy"""
-    # TODO: See: https://docs.confluent.io/current/kafka-rest/api.html#get--topics
-    resp = requests.get()  # TODO
+    url = f"{REST_PROXY_URL}/topics"
+    resp = requests.get(url)
 
     try:
         resp.raise_for_status()
     except:
-        print("Failed to get topics {json.dumps(resp.json(), indent=2)})")
+        print(f"Failed to get topics {json.dumps(resp.json(), indent=2)})")
         return []
 
     print("Fetched topics from Kafka:")
@@ -26,13 +23,15 @@ def get_topics():
 
 def get_topic(topic_name):
     """Get specific details on a topic"""
-    # TODO: See: https://docs.confluent.io/current/kafka-rest/api.html#get--topics
-    resp = requests.get()  # TODO
+    print(topic_name)
+    url = f"{REST_PROXY_URL}/topics/{topic_name}"
+    print(url)
+    resp = requests.get(url)
 
-    try:
-        resp.raise_for_status()
-    except:
-        print("Failed to get topics {json.dumps(resp.json(), indent=2)})")
+    # try:
+    #     resp.raise_for_status()
+    # except:
+    #     print("Failed to get topics {json.dumps(resp.json(), indent=2)})")
 
     print("Fetched topics from Kafka:")
     print(json.dumps(resp.json(), indent=2))
@@ -40,8 +39,8 @@ def get_topic(topic_name):
 
 def get_brokers():
     """Gets broker information"""
-    # TODO See: https://docs.confluent.io/current/kafka-rest/api.html#get--brokers
-    resp = requests.get()  # TODO
+    url = f"{REST_PROXY_URL}/brokers"
+    resp = requests.get(url)
 
     try:
         resp.raise_for_status()
@@ -52,13 +51,15 @@ def get_brokers():
     print(json.dumps(resp.json(), indent=2))
 
 
-def get_partitions(topic_name):
+def get_partitions(topic_name, partition_id=None):
     """Prints partition information for a topic"""
-    # TODO: Using the above endpoints as an example, list
-    #       partitions for a given topic name using the API
-    #
-    #       See: https://docs.confluent.io/current/kafka-rest/api.html#get--topics-(string-topic_name)-partitions
-    print("get_partition is not yet implemented!")
+    url = f"{REST_PROXY_URL}/topics/{topic_name}/partitions"
+    if partition_id:
+        url += f"/{str(partition_id)}"
+
+    resp = requests.get(url)
+    print("Fetched partitions from Kafka:")
+    print(json.dumps(resp.json(), indent=2))
 
 
 if __name__ == "__main__":
