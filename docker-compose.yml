@@ -55,7 +55,7 @@ services:
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
 
   connect:
-    image: cnfldemos/cp-server-connect-datagen:0.4.0-6.1.0
+    image: confluentinc/cp-kafka-connect:latest
     hostname: connect
     container_name: connect
     depends_on:
@@ -84,6 +84,9 @@ services:
       CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
       CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
       CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
+    volumes:
+    - ./jars/kafka-connect-jdbc-10.2.0.jar:/usr/share/java/kafka/kafka-connect-jdbc-10.2.0.jar
+    - ./jars/postgresql-42.2.19.jar/:/usr/share/java/kafka-connect-jdbc/postgresql-42.2.19.jar
 
 #  control-center:
 #    image: confluentinc/cp-enterprise-control-center:6.1.1
@@ -187,4 +190,4 @@ services:
       - "5432:5432"
     restart: unless-stopped
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql

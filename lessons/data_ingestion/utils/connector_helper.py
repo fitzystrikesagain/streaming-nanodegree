@@ -1,11 +1,14 @@
+from pprint import pprint
+
 from lessons.data_ingestion.utils.kafka_connect_helper import KafkaConnectHelper
 
 CONNECT_ENDPOINTS = {
     "plugins": "/connector-plugins",
     "connectors": "/connectors",
+    "update_connector": "/connectors/{name}/config",
     "details": "/connectors/{conn_name}",
     "manage": "/connectors/{conn_name}/{action}",
-    "delete": "/connectors/{conn_name}/delete",
+    "delete": "/connectors/{conn_name}",
 }
 
 
@@ -45,7 +48,7 @@ class ConnectorHelper(KafkaConnectHelper):
         Returns a dict of plugins
         :return: json response
         """
-        endpoint = endpoint = CONNECT_ENDPOINTS["plugins"]
+        endpoint = CONNECT_ENDPOINTS["plugins"]
         r = self.request(endpoint=endpoint)
         return r.json()
 
@@ -79,6 +82,27 @@ class ConnectorHelper(KafkaConnectHelper):
 
         endpoint = CONNECT_ENDPOINTS["connectors"]
         r = self.request(method="post", endpoint=endpoint, data=data)
+        return r.json()
+
+    def create_jdbc_connector(self, data):
+        """
+        Creates a new jdbc connector
+        :param data: a non-serialized jdbc connector config
+        :type data: a jdbc connector config
+        :return: json response
+        """
+        name = data["name"]
+
+        # Update the ocnnector if it exists
+        if name in self.get_connectors():
+            endpoint = CONNECT_ENDPOINTS["update_connector"].format(name=name)
+            method = "put"
+            data = data["config"]
+        else:
+            endpoint = CONNECT_ENDPOINTS["connectors"]
+            method = "post"
+
+        r = self.request(method=method, endpoint=endpoint, data=data)
         return r.json()
 
     def manage_connector(self, name, action):
