@@ -82,7 +82,7 @@ but does not surface logs or metrics.
 
 ## Using the Kafka Connect API
 
-In this exercise we're going to make use of the Kafka Connect API.
+In this exercise we’re going to make use of the Kafka Connect API.
 
 [REST API documentation](https://docs.confluent.io/current/connect/references/restapi.html).
 
@@ -172,7 +172,24 @@ Example exercise [here](../4_kafka_connect_rest_proxy/filestream_source.py)
 
 ## JDBC Sinks and Sources
 
+The Java Database Connector (JDBC) API abstracts SQL interfaces for Java applications. Kafka uses JDBC to interact with
+databases like MySql, Postgres, etc.
+
+JDBC **Sinks** are common for moving data from Kafka *to* databases. Once data is in Kafka, it can be used in stream
+processing for enrichment or other uses.
+
+JDBC **Sources** are common for moving data out of Kafka into traditional data stores. Sources are often used to make
+stream processing insights available for ad-hoc or batch querying.
+
 ## Kafka Connect JDBC Source
+
+Example exercise [here](../4_kafka_connect_rest_proxy/jdbc_source.py)
+Mock data [here](../4_kafka_connect_rest_proxy/mock_clicks.py)
+
+### Further Reading — Connector Source Documentation
+
+* [Kafka FileStream Connector Documentation](https://docs.confluent.io/current/connect/filestream_connector.html)
+* [Kafka JDBC Source Connector Documentation](https://docs.confluent.io/current/connect/kafka-connect-jdbc/index.html)
 
 ## Key Connectors Summary
 
@@ -202,4 +219,5 @@ Example exercise [here](../4_kafka_connect_rest_proxy/filestream_source.py)
 
 ## Lesson Summary
 
+# dsnd/kafka
 
