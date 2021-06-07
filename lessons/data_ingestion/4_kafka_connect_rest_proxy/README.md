@@ -168,7 +168,7 @@ disk.
 
 ## Kafka Connect FileStream Source
 
-Example exercise [here](../4_kafka_connect_rest_proxy/filestream_source.py)
+Example exercise [here](./filestream_source.py)
 
 ## JDBC Sinks and Sources
 
@@ -183,23 +183,36 @@ stream processing insights available for ad-hoc or batch querying.
 
 ## Kafka Connect JDBC Source
 
-Example exercise [here](../4_kafka_connect_rest_proxy/jdbc_source.py)
-Mock data [here](../4_kafka_connect_rest_proxy/mock_clicks.py)
+Example exercise [here](./jdbc_source.py)
+Mock data [here](./mock_clicks.py)
 
 ### Further Reading — Connector Source Documentation
 
 * [Kafka FileStream Connector Documentation](https://docs.confluent.io/current/connect/filestream_connector.html)
 * [Kafka JDBC Source Connector Documentation](https://docs.confluent.io/current/connect/kafka-connect-jdbc/index.html)
 
-## Key Connectors Summary
-
 ## Kafka REST Proxy
+
+Clients that are unable to integrate either Kafka clients or Kafka Connect can still integrate with Kafka through the
+REST proxy, provided they have an HTTP client. This section will cover how the REST proxy works.
 
 ## REST Proxy Architecture
 
-## Review: REST Proxy Architecture
+Nothing new here:
+
+* Written in Java/Scala, runs on JVM
+* May run standalone or clustered
+* Transforms structured JSON data into Kafka’s binary format and vice-versa
+* Cannot create topics, only get topic metadata
+    * Is useful for reading basic administrative metadata
+* Can be made Schema Registry aware
+* Most useful when Kafka client or Connect are not options
+    * Proxy isn’t recommended unless necessary, since a client or Connect will provide time-saving abstractions and
+      performance benefits
 
 ## Practice: REST Proxy Metadata API
+
+[Exercise here](./proxy_metadata_api.py)
 
 ## REST Proxy Summary
 
@@ -218,6 +231,3 @@ Mock data [here](../4_kafka_connect_rest_proxy/mock_clicks.py)
 ## Summary: Using REST Proxy
 
 ## Lesson Summary
-
-# dsnd/kafka
-
