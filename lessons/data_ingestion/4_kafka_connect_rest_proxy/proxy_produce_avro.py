@@ -1,5 +1,3 @@
-# Please complete TODO items in the code
-
 from dataclasses import asdict, dataclass, field
 import json
 import time
@@ -28,17 +26,17 @@ AVRO_SCHEMA = """{
 def produce():
     """Produces data using REST Proxy"""
 
-    # TODO: Set the appropriate headers
-    #       See: https://docs.confluent.io/current/kafka-rest/api.html#content-types
-    headers = {}
-    # TODO: Update the below payload to include the Avro Schema string
-    #       See: https://docs.confluent.io/current/kafka-rest/api.html#post--topics-(string-topic_name)
+    headers = {"Content-Type": "application/vnd.kafka.avro.v2+json"}
     data = {
-        # TODO
-        "records": [{"value": asdict(ClickEvent())}]
+        "value_schema": AVRO_SCHEMA,
+        "records": [
+            {
+                "value": asdict(ClickEvent()),
+            }
+        ]
     }
     resp = requests.post(
-        f"{REST_PROXY_URL}/topics/lesson4.exercise6.click_events",  # TODO
+        f"{REST_PROXY_URL}/topics/lesson4.exercise6.click_events",
         data=json.dumps(data),
         headers=headers,
     )
