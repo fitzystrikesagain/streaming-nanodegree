@@ -47,7 +47,7 @@ graphic.
 * [Tasks](https://docs.confluent.io/platform/current/connect/concepts.html#tasks) -> contain production/consumption code
 * [Converters](https://docs.confluent.io/platform/current/connect/concepts.html#converters) -> map data formats to/from
   Connect
-    * Kafka and target systems often have different formats
+  * Kafka and target systems often have different formats
 
 ## Kafka Connect Summary
 
@@ -204,21 +204,35 @@ Nothing new here:
 * May run standalone or clustered
 * Transforms structured JSON data into Kafka’s binary format and vice-versa
 * Cannot create topics, only get topic metadata
-    * Is useful for reading basic administrative metadata
+  * Is useful for reading basic administrative metadata
 * Can be made Schema Registry aware
 * Most useful when Kafka client or Connect are not options
-    * Proxy isn’t recommended unless necessary, since a client or Connect will provide time-saving abstractions and
-      performance benefits
+  * Proxy isn’t recommended unless necessary, since a client or Connect will provide time-saving abstractions and
+    performance benefits
 
 ## Practice: REST Proxy Metadata API
 
 [Exercise here](./proxy_metadata_api.py)
 
-## REST Proxy Summary
-
 ## Using REST Proxy
 
-## Review of REST Proxy Usage
+This section covers the production and consumption of data with the REST Proxy.
+
+* [`POST` to `/topic/${topic_name}` to produce data](https://docs.confluent.io/current/kafka-rest/api.html#post--topics-(string-topic_name)
+* Data may be Binary, JSON, or Avro
+  * Avro data must include schema as a string
+* [Per-format Content-Type headers](https://docs.confluent.io/current/kafka-rest/api.html#content-types)
+  * Content-Type is in the format `application/vnd.kafka.[embedded_format].[api_version]+[serialization_format]`
+    embedded_format is how the data destined for Kafka is formatted. Must be one of binary, json, or avro
+* `api_version` is the API version for REST Proxy. This is `v2` as of this writing
+* `serialization_format` has nothing to do with the Kafka data, this is how data sent to the REST Proxy is serialized
+* Only JSON is supported, so this should always be JSON
+
+| Format | Header |
+| --- | --- |  
+|Binary|`application/vnd.kafka.binary.v2+json`|
+|JSON|`application/vnd.kafka.json.v2+json`|
+|Avro|`application/vnd.kafka.avro.v2+json`|
 
 ## Producing JSON Data via REST Proxy
 
@@ -231,3 +245,6 @@ Nothing new here:
 ## Summary: Using REST Proxy
 
 ## Lesson Summary
+
+--------
+#dsnd/kafka
