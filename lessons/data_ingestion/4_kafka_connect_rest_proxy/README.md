@@ -47,7 +47,7 @@ graphic.
 * [Tasks](https://docs.confluent.io/platform/current/connect/concepts.html#tasks) -> contain production/consumption code
 * [Converters](https://docs.confluent.io/platform/current/connect/concepts.html#converters) -> map data formats to/from
   Connect
-  * Kafka and target systems often have different formats
+    * Kafka and target systems often have different formats
 
 ## Kafka Connect Summary
 
@@ -204,11 +204,11 @@ Nothing new here:
 * May run standalone or clustered
 * Transforms structured JSON data into Kafka’s binary format and vice-versa
 * Cannot create topics, only get topic metadata
-  * Is useful for reading basic administrative metadata
+    * Is useful for reading basic administrative metadata
 * Can be made Schema Registry aware
 * Most useful when Kafka client or Connect are not options
-  * Proxy isn’t recommended unless necessary, since a client or Connect will provide time-saving abstractions and
-    performance benefits
+    * Proxy isn’t recommended unless necessary, since a client or Connect will provide time-saving abstractions and
+      performance benefits
 
 ## Practice: REST Proxy Metadata API
 
@@ -218,27 +218,46 @@ Nothing new here:
 
 This section covers the production and consumption of data with the REST Proxy.
 
-* [`POST` to `/topic/${topic_name}` to produce data](https://docs.confluent.io/current/kafka-rest/api.html#post--topics-(string-topic_name)
+* [`POST` to `/topic/<topic_name>` to produce data](https://docs.confluent.io/current/kafka-rest/api.html#post--topics-(string-topic_name)
 * Data may be Binary, JSON, or Avro
-  * Avro data must include schema as a string
+    * Avro data must include schema as a string
 * [Per-format Content-Type headers](https://docs.confluent.io/current/kafka-rest/api.html#content-types)
-  * Content-Type is in the format `application/vnd.kafka.[embedded_format].[api_version]+[serialization_format]`
-    embedded_format is how the data destined for Kafka is formatted. Must be one of binary, json, or avro
+    * Content-Type is in the format `application/vnd.kafka.[embedded_format].[api_version]+[serialization_format]`
+      embedded_format is how the data destined for Kafka is formatted. Must be one of binary, json, or avro
 * `api_version` is the API version for REST Proxy. This is `v2` as of this writing
 * `serialization_format` has nothing to do with the Kafka data, this is how data sent to the REST Proxy is serialized
 * Only JSON is supported, so this should always be JSON
 
 | Format | Header |
-| --- | --- |  
+| — | — |  
 |Binary|`application/vnd.kafka.binary.v2+json`|
 |JSON|`application/vnd.kafka.json.v2+json`|
 |Avro|`application/vnd.kafka.avro.v2+json`|
 
 ## Producing JSON Data via REST Proxy
+[Exercise here](./proxy_produce_json.py)
 
 ## Producing Avro Data via REST Proxy
+[Exercise here](./proxy_produce_avro.py)
 
 ## Consuming Data with REST Proxy
+## Consuming Data with REST Proxy
+
+1. [Creates a consumer group](https://docs.confluent.io/platform/current/kafka-rest/api.html#post--consumers-(string-group_name)): `POST`
+   to `/consumers/<group_name>`
+2. [Creates a subscription](https://docs.confluent.io/platform/current/kafka-rest/api.html#post--consumers-(string-group_name)-instances-(string-instance)-subscription): `POST`
+   to `/consumers/<group_name>/instances/<instance_id>/subscriptions`
+3. [Retrieves records](https://docs.confluent.io/platform/current/kafka-rest/api.html#get--consumers-(string-group_name)-instances-(string-instance)-records): `GET`
+   from `/consumers/<group_name>/instances/<instance_id>/records`
+4. [Unsubscribes a consumer](https://docs.confluent.io/platform/current/kafka-rest/api.html#delete--consumers-(string-group_name)-instances-(string-instance)-subscription): `DELETE`
+   to `/consumers/<group_name>/instances/<instance_id>/subscription`
+
+* [Always check your Accept header to ensure that it is correctly configured](https://docs.confluent.io/current/kafka-rest/api.html#content-types)
+    * `Content-Type` is in the format `application/vnd.kafka[.embedded_format].[api_version]+[serialization_format]`
+    * `embedded_format` is how the data requested from Kafka is formatted. Must be one of `binary`, `json`, or `avro`
+    * `api_version` is the API version for REST Proxy — this should always be `v2` as of writing
+    * `serialization_format` has nothing to do with your Kafka data, this is how the actual data being received from
+      REST proxy is serialized. Only `json` is supported for now — so always set this to `json`!
 
 ## Practice: Consuming Avro Data via REST Proxy
 
@@ -248,3 +267,4 @@ This section covers the production and consumption of data with the REST Proxy.
 
 --------
 #dsnd/kafka
+
