@@ -1,5 +1,3 @@
-# Please complete TODO items in the code
-
 from dataclasses import asdict, dataclass, field
 import json
 import time
@@ -11,24 +9,19 @@ from confluent_kafka.avro import AvroConsumer, AvroProducer, CachedSchemaRegistr
 from faker import Faker
 
 faker = Faker()
-REST_PROXY_URL = "http://localhost:8082"
+REST_PROXY_URL = "http://localhost:8082{endpoint}"
 
 
 def produce():
     """Produces data using REST Proxy"""
-
-    # TODO: Set the appropriate headers
-    #       See: https://docs.confluent.io/current/kafka-rest/api.html#content-types
-    headers = {}
-    # TODO: Define the JSON Payload to b sent to REST Proxy
-    #       To create data, use `asdict(ClickEvent())`
-    #       See: https://docs.confluent.io/current/kafka-rest/api.html#post--topics-(string-topic_name)
-    data = {}
-    # TODO: What URL should be used?
-    #       See: https://docs.confluent.io/current/kafka-rest/api.html#post--topics-(string-topic_name)
-    resp = requests.post(
-        f"{REST_PROXY_URL}/", data=json.dumps(data), headers=headers  # TODO
-    )
+    headers = {"Content-Type": "application/vnd.kafka.json.v2+json"}
+    url = REST_PROXY_URL.format(endpoint="/topics/clicks")
+    data = {
+        "records": [
+            {"value": asdict(ClickEvent())}
+        ]
+    }
+    resp = requests.post(url, data=json.dumps(data), headers=headers)
 
     try:
         resp.raise_for_status()
