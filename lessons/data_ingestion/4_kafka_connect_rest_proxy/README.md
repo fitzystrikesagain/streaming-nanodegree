@@ -241,7 +241,6 @@ This section covers the production and consumption of data with the REST Proxy.
 [Exercise here](./proxy_produce_avro.py)
 
 ## Consuming Data with REST Proxy
-## Consuming Data with REST Proxy
 
 1. [Creates a consumer group](https://docs.confluent.io/platform/current/kafka-rest/api.html#post--consumers-(string-group_name)): `POST`
    to `/consumers/<group_name>`
@@ -260,11 +259,4 @@ This section covers the production and consumption of data with the REST Proxy.
       REST proxy is serialized. Only `json` is supported for now — so always set this to `json`!
 
 ## Practice: Consuming Avro Data via REST Proxy
-
-## Summary: Using REST Proxy
-
-## Lesson Summary
-
---------
-#dsnd/kafka
-
+[Exercise here](proxy_consume_avro.py)

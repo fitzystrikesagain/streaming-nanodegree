@@ -1,5 +1,3 @@
-# Please complete TODO items in this code
-
 import asyncio
 from dataclasses import asdict, dataclass, field
 import json
@@ -13,20 +11,21 @@ from faker import Faker
 
 faker = Faker()
 REST_PROXY_URL = "http://localhost:8082"
-TOPIC_NAME = "lesson4.solution7.click_events"
-CONSUMER_GROUP = f"solution7-consumer-group-{random.randint(0, 10000)}"
+TOPIC_NAME = "lesson4.exercise7.click_events"
+CONSUMER_NAME = "clicks-proxy-consumer"
+CONSUMER_GROUP = f"{CONSUMER_NAME}-group"
 
 
 async def consume():
     """Consumes from REST Proxy"""
-    # TODO: Define a consumer name
-    consumer_name = ""
-    # TODO: Define the appropriate headers
-    #       See: https://docs.confluent.io/current/kafka-rest/api.html#content-types
-    headers = {}
-    # TODO: Define the consumer group creation payload, use avro
-    #       See: https://docs.confluent.io/current/kafka-rest/api.html#post--consumers-(string-group_name)
-    data = {}
+    consumer_name = "clicks-proxy-consumer"
+    headers = {
+        "Content-Type": "application/vnd.kafka.avro.v2+json"
+    }
+    data = {
+        "name": consumer_name,
+        "format": "avro",
+    }
     resp = requests.post(
         f"{REST_PROXY_URL}/consumers/{CONSUMER_GROUP}",
         data=json.dumps(data),
@@ -42,11 +41,11 @@ async def consume():
     print("REST Proxy consumer group created")
 
     resp_data = resp.json()
-    #
-    # TODO: Create the subscription payload
-    #       See: https://docs.confluent.io/current/kafka-rest/api.html#consumers
-    #
-    data = {}
+    data = {
+        "topics": [
+            TOPIC_NAME
+        ]
+    }
     resp = requests.post(
         f"{resp_data['base_uri']}/subscription", data=json.dumps(data), headers=headers
     )
@@ -59,12 +58,10 @@ async def consume():
         return
     print("REST Proxy consumer subscription created")
     while True:
-        #
-        # TODO: Set the Accept header to the same data type as the consumer was created with
-        #       See: https://docs.confluent.io/current/kafka-rest/api.html#get--consumers-(string-group_name)-instances-(string-instance)-records
-        #
-        headers = {}
-        resp = requests.get(f"{resp_data['base_uri']}/records", headers=headers)
+        headers = {
+            "Accept": "application/vnd.kafka.json.v2+json"
+        }
+        resp = requests.get(f"{resp_data['base_uri']}/records/?timeout=10000", headers=headers)
         try:
             resp.raise_for_status()
         except:
@@ -74,7 +71,7 @@ async def consume():
             return
         print("Consumed records via REST Proxy:")
         print(f"{json.dumps(resp.json())}")
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.01)
 
 
 @dataclass
@@ -114,7 +111,7 @@ async def produce(topic_name):
                 value=asdict(ClickEvent()),
                 value_schema=ClickEvent.schema,
             )
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.01)
     except:
         raise
 
