@@ -62,7 +62,7 @@ def produce_sync(topic_name):
         means it returns immediately and has very little performance impact.
         """
         p.poll(0)
-        time.sleep(.1)
+        time.sleep(.5)
 
 
 def main():

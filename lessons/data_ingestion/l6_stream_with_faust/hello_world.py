@@ -1,21 +1,35 @@
+from abc import ABC
+from dataclasses import asdict, dataclass
+import json
+
 import faust
 
-BROKER_URL = "PLAINTEXT://localhost:9092"
+BROKER_URL = "kafka://localhost:9092"
 TOPIC_NAME = "com.udacity.streams.purchases"
 
-app = faust.App(
-    'hello-world',
-    broker='kafka://localhost:9092',
-    value_serializer='raw',
-)
 
-purchases_topic = app.topic(TOPIC_NAME)
+@dataclass
+class Purchase(faust.Record, ABC):
+    username: str
+    currency: str
+    amount: int
+
+
+app = faust.App(
+    "exercise2",
+    broker=BROKER_URL)
+
+purchases_topic = app.topic(
+    TOPIC_NAME,
+    key_type=str,
+    value_type=Purchase
+)
 
 
 @app.agent(purchases_topic)
 async def purchase(purchases):
     async for p in purchases:
-        print(p)
+        print(json.dumps(asdict(p), indent=2))
 
 
 if __name__ == "__main__":
