@@ -15,6 +15,13 @@ class Purchase(faust.Record, ABC):
     amount: int
 
 
+@dataclass
+class PurchaseDollars(faust.Record, ABC):
+    username: str
+    currency: str
+    amount: float
+
+
 app = faust.App(
     "exercise2",
     broker=BROKER_URL)
@@ -24,12 +31,22 @@ purchases_topic = app.topic(
     key_type=str,
     value_type=Purchase
 )
+dollars_topic = app.topic(
+    f"{TOPIC_NAME}.dollars",
+    key_type=str,
+    value_type=PurchaseDollars
+)
 
 
 @app.agent(purchases_topic)
 async def purchase(purchases):
     async for p in purchases:
-        print(json.dumps(asdict(p), indent=2))
+        purchase_in_dollars = PurchaseDollars(
+            username=p.username,
+            currency=p.currency,
+            amount=p.amount / 100.0
+        )
+        await dollars_topic.send(key=p.username, value=purchase_in_dollars)
 
 
 if __name__ == "__main__":
