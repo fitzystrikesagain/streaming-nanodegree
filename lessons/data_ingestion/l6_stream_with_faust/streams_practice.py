@@ -1,5 +1,4 @@
-# Please complete the TODO items in the code
-
+from abc import ABC
 from dataclasses import asdict, dataclass
 import json
 
@@ -7,7 +6,7 @@ import faust
 
 
 @dataclass
-class ClickEvent(faust.Record):
+class ClickEvent(faust.Record, ABC):
     email: str
     timestamp: str
     uri: str
@@ -25,15 +24,10 @@ popular_uris_topic = app.topic(
 
 @app.agent(clickevents_topic)
 async def clickevent(clickevents):
-    #
-    # TODO: Filter clickevents to only those with a number higher than or
-    #       equal to 100
-    #       See: https://faust.readthedocs.io/en/latest/userguide/streams.html#filter-filter-values-to-omit-from-stream
-    #
-    # async for ...
-    #
-    # TODO: Send the message to the `popular_uris_topic` with a key and value.
-    #
+    # Filter clickevents to only those with a number higher than or equal to 100
+    async for click in clickevents.filter(lambda x: x.number >= 100):
+        # Send the message to the `popular_uris_topic` with a key and value.
+        await popular_uris_topic.send(key=click.uri, value=click)
     pass
 
 
